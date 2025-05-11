@@ -11,7 +11,7 @@
 
 ## 📷 屏幕截图（示例）
 
-> ![示例](https://github.com/ouyanglingle/MyController/main/ALLBMP/example.jpg)
+> ![示例](https://github.com/ouyanglingle/MyController/tree/main/AllBMP/example.jpg)
 
 ---
 
