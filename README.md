@@ -11,7 +11,7 @@
 
 ## 📷 屏幕截图（示例）
 
-> [在这里插入你的屏幕截图图片链接]
+> ![示例](https://github.com/ouyanglingle/MyController/main/ALLBMP/example.jpg)
 
 ---
 
