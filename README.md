@@ -3,7 +3,7 @@
 
 # ESP32S3 Controller UI Menu System
 
-[![License](https://img.shields.io/github/license/yourname/yourrepo)](https://github.com/yourname/yourrepo/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/ouyanglingle/MyController)](https://github.com/ouyanglingle/MyController/main/LICENSE)
 
 一个基于 ESP32-S3 的嵌入式菜单系统，支持水平滚动主菜单与竖直子菜单，使用 **TFT_eSPI** 显示驱动和 **PID 控制器** 实现复选框弹性动画效果，适用于触摸或物理按键交互的嵌入式设备界面开发。
 
