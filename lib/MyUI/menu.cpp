@@ -6,10 +6,11 @@
 #include <Ticker.h>
 
 #include "menu.h"
-#include "key.h"
+#include "input.h"
 #include "pid.h"
 #include "mypicture.h"
 
+#include "mytask.h"
 #include "esp_system.h"
 
 // 全局显示对象
@@ -41,10 +42,10 @@ void DrawMainMenuBOX();
 
 // 定义子菜单项
 MenuItem SettingMenu[] PROGMEM = {
-    {"Example 1", NULL, NULL, 0, SECONDARY, NULL},
-    {"Example 2", NULL, NULL, 0, NORMAL_TEXT, NULL},
-    {"Example 3", NULL, NULL, 0, NORMAL_TEXT, NULL},
-    {"Example 4", NULL, NULL, 0, NORMAL_TEXT, NULL},
+    {"      TITLE1      ", NULL, NULL, 0, SECONDARY, NULL},
+    {"DrawJoystickValue", ShowJoystikValue, NULL, 0, NORMAL_TEXT, NULL},
+    {"TCP Example", TCP_tick, NULL, 0, NORMAL_TEXT, NULL},
+    {"DebugReceive", DebugReceive, NULL, 0, NORMAL_TEXT, NULL},
     {"Example 5", NULL, NULL, 0, NORMAL_TEXT, NULL},
     {"Example 6", NULL, NULL, 0, NORMAL_TEXT, NULL},
     {"Example 7", NULL, NULL, 0, NORMAL_TEXT, NULL},
@@ -57,12 +58,12 @@ MenuItem SettingMenu[] PROGMEM = {
 };
 // 主菜单项(1.3寸240x240屏幕最多水平放置3个100x100像素的图标)
 MenuItem MainMenu[] PROGMEM = {
-    {"SETTING1", NULL, SettingMenu, sizeof(SettingMenu) / sizeof(SettingMenu[0]), PRIMARY, SETTING1_PNG},
-    {"SETTING2", NULL, NULL, 0, PRIMARY, SETTING2_PNG},
+    {"SETTING1", NULL, SettingMenu, sizeof(SettingMenu) / sizeof(SettingMenu[0]), PRIMARY, HIROKO},
+    {"SETTING2", NULL, NULL, 0, PRIMARY, HIROKO},
     {"SETTING3", NULL, NULL, 0, PRIMARY, SETTING3_PNG},
-    {"SETTING3", NULL, NULL, 0, PRIMARY, SETTING3_PNG},
-    {"SETTING2", NULL, NULL, 0, PRIMARY, SETTING2_PNG},
-    {"SETTING1", NULL, NULL, 0, PRIMARY, SETTING1_PNG},
+    {"SETTING3", NULL, NULL, 0, PRIMARY, HIROKO},
+    {"SETTING2", NULL, NULL, 0, PRIMARY, SETTING3_PNG},
+    {"SETTING1", NULL, NULL, 0, PRIMARY, HIROKO},
 };
 // ================================
 //        这些个变量比较重要
@@ -75,24 +76,34 @@ uint8_t MaxVisibleMainMenuCNT = 3;    // 最大可见主菜单数量（主菜单
 uint8_t MaxVisibleSubMenuCNT = 11;    // 最大可见子菜单数量（子菜单无图片,竖直排列,还有当前页面显示不下的）
 int menuOffset = 0;                   // 菜单编号偏移量，用来移动
 int maxOffset;                        // 边界
-int animationStep = 10;               // 控制动画速度，值越大移动越快
+int animationStep = 10;               // 控制图标移动速度，值越大移动越快
 int targetMenuOffset = 0;             // 目标偏移量
 bool isAnimating = false;             // 动画状态标志
 int currentAnimationProgress = 0;     // 当前动画进度
 int lastMenuOffset = 0;               // 记录上一次的 menuOffset 值
 
+// ==================================
+//          动画 PID 参数设置
+// ==================================
+
+int tarMenuItemPOS_x = 10;                         // 水平复选框目标位置
+float nowMenuItemPOS_x = 0;                        // 当前实际绘制的位置（由 PID 控制）
+float SelectBoxPID_posX_PID[] = {0.12, 0.05, 0.1}; // PID 参数（想弹起来，调调i和d,k给小）
+pid_type_def SelectBoxPID_posX = {0};
+int tarMenuItemPOS_y = 10;  // 竖直复选框目标位置
+float nowMenuItemPOS_y = 0; // 当前实际绘制的位置（由 PID 控制）
+float SelectBoxPID_posY_PID[] = {0.2, 0.05, 0.1};
+pid_type_def SelectBoxPID_posY = {0};
+
 /// @brief 初始化菜单
 /// @param void
 void Menu_Init(void)
 {
-    extern pid_type_def SelectBoxPID_posX;
-    extern pid_type_def SelectBoxPID_posY;
-    extern float SelectBoxPID_posX_PID[];
-    extern float SelectBoxPID_posY_PID[];
     PID_init(&SelectBoxPID_posX, PID_DELTA, SelectBoxPID_posX_PID, 10, 0.2);
     PID_init(&SelectBoxPID_posY, PID_DELTA, SelectBoxPID_posY_PID, 6, 0.2);
     tft.init();
     tft.fillScreen(BF_BG_COLOR);
+    tft.setRotation(3);
     bf.createSprite(TFT_WIDTH, TFT_HEIGHT);
     bf.setTextColor(BF_FG_COLOR, BF_BG_COLOR);
     bf.setTextSize(2); // 设置字体大小,
@@ -110,12 +121,13 @@ void Draw_Menu(void)
     {
     case MAIN_MENU:
     {
+        bf.setTextSize(1);
         // bf.drawString(F("ESP32S3 Controller"), 0.5 * TFT_WIDTH - 216 / 2, 10);
         bf.pushImage(0, 0, HOME_WIDTH, HOME_HEIGHT, HOME); // 绘制主菜单标题图
-        bf.setCursor(0, 70);
-        bf.setTextSize(1);
-        bf.printf("%.2f\n", temperatureRead());
-        bf.setTextSize(2);
+        bf.drawString(F("AP IP: "), 0, 65);
+        bf.setCursor(38, 65);
+        bf.print(IP);
+
         nowMenuCNT = sizeof(MainMenu) / sizeof(MainMenu[0]);
         maxOffset = max(0, nowMenuCNT - MaxVisibleMainMenuCNT);
 
@@ -156,10 +168,22 @@ void Draw_Menu(void)
             if (MainMenu[index_to_draw].bmp_icon != NULL)
                 bf.pushImage(final_x, png_y_pos, 60, 60, MainMenu[index_to_draw].bmp_icon);
             // 绘制标题
-            bf.setTextSize(1);
             int text_x = final_x + (60 - bf.textWidth(MainMenu[index_to_draw].name)) * 0.5;
+            switch (MainMenu[nowMainMenuIndex].titleClass)
+            {
+            case SECONDARY:
+                bf.setTextColor(TFT_PURPLE, TFT_DARKGREY);
+                break;
+            case NORMAL_TEXT:
+                bf.setTextColor(BF_FG_COLOR, BF_BG_COLOR);
+                break;
+            case SYS_FUNC_TEXT:
+                bf.setTextColor(TFT_WHITE, TFT_PURPLE);
+                break;
+            default:
+                bf.setTextColor(BF_FG_COLOR, BF_BG_COLOR);
+            }
             bf.drawString(MainMenu[index_to_draw].name, text_x, png_y_pos - 20);
-            bf.setTextSize(2);
         }
         //=========== 绘制复选框 ============
         DrawMainMenuBOX();
@@ -170,13 +194,14 @@ void Draw_Menu(void)
             int scrollbarWidth = TFT_WIDTH * visibleRatio;                  // 滚动条的宽度
             scrollbarWidth = constrain(scrollbarWidth, 20, TFT_WIDTH);      // 确保滚动条至少有20像素宽
             int scrollbarPos = map(nowMainMenuIndex, 0, nowMenuCNT, 0, TFT_WIDTH - scrollbarWidth);
-            bf.fillRect(0, TFT_HEIGHT - 8, TFT_WIDTH, 5, TFT_DARKGREY);                      // 背景条（高度为5像素）
-            bf.fillRoundRect(scrollbarPos, TFT_HEIGHT - 10, scrollbarWidth, 9, 2, TFT_BLUE); // 填充条
+            bf.fillRect(0, TFT_HEIGHT - 8, TFT_WIDTH, 5, TFT_DARKGREY);                     // 背景条（高度为5像素）
+            bf.fillRoundRect(scrollbarPos, TFT_HEIGHT - 9, scrollbarWidth, 7, 2, TFT_BLUE); // 填充条
         }
         break;
     }
     case SECOND_MENU:
     {
+        bf.setTextSize(2);
         nowMenuCNT = MainMenu[nowMainMenuIndex].subMenuCount;
         maxOffset = max(0, nowMenuCNT - MaxVisibleSubMenuCNT);
 
@@ -189,7 +214,7 @@ void Draw_Menu(void)
             int sub_text_y = 10 + i * 20; // 每个标题高度为20像素
 
             // 绘制标题
-            switch (MainMenu[nowMainMenuIndex].titleClass)
+            switch (MainMenu[nowMainMenuIndex].subMenu[index_to_draw].titleClass)
             {
             case SECONDARY:
                 bf.setTextColor(TFT_PURPLE, TFT_DARKGREY);
@@ -232,8 +257,8 @@ void Menu_Key_Handle(void)
     // 保存旧的menuOffset用于判断方向
     int oldOffset = menuOffset;
     // 获取按键状态
-    KEY_STATE UP_KEY_STATE = getKeyState(RIGHT_PIN);
-    KEY_STATE DOWN_KEY_STATE = getKeyState(LEFT_PIN);
+    KEY_STATE UP_KEY_STATE = getKeyState(UP_PIN);
+    KEY_STATE DOWN_KEY_STATE = getKeyState(DOWN_PIN);
     KEY_STATE ENTER_KEY_STATE = getKeyState(ENTER_PIN);
 
     if (ENTER_KEY_STATE == KEY_PRESS)
@@ -241,7 +266,8 @@ void Menu_Key_Handle(void)
         if (nowMenuLevel == MAIN_MENU && MainMenu[nowMainMenuIndex].subMenu != NULL) // 如果有子菜单，进入子菜单
         {
             nowMenuLevel = SECOND_MENU; // 改变菜单层级
-            menuOffset = 0;             // 重置偏移量
+            nowSubMenuIndex = 0;
+            menuOffset = 0; // 重置偏移量
         }
         else if (nowMenuLevel == SECOND_MENU)
         {
@@ -250,6 +276,36 @@ void Menu_Key_Handle(void)
         }
     }
     else if (UP_KEY_STATE == KEY_PRESS)
+    {
+
+        if (nowMenuLevel == MAIN_MENU)
+        {
+            nowMainMenuIndex--;
+            if (nowMainMenuIndex < 0)
+                nowMainMenuIndex = 0;
+
+            // 自动滚动屏幕
+            if (nowMainMenuIndex < menuOffset)
+            {
+                lastMenuOffset = menuOffset;
+                menuOffset--;
+            }
+        }
+        else if (nowMenuLevel == SECOND_MENU)
+        {
+            nowSubMenuIndex--;
+            if (nowSubMenuIndex < 0)
+                nowSubMenuIndex = 0;
+
+            // 自动滚动屏幕
+            if (nowSubMenuIndex < menuOffset)
+            {
+                lastMenuOffset = menuOffset;
+                menuOffset--;
+            }
+        }
+    }
+    else if (DOWN_KEY_STATE == KEY_PRESS)
     {
         if (nowMenuLevel == MAIN_MENU)
         {
@@ -278,35 +334,6 @@ void Menu_Key_Handle(void)
             }
         }
     }
-    else if (DOWN_KEY_STATE == KEY_PRESS)
-    {
-        if (nowMenuLevel == MAIN_MENU)
-        {
-            nowMainMenuIndex--;
-            if (nowMainMenuIndex < 0)
-                nowMainMenuIndex = 0;
-
-            // 自动滚动屏幕
-            if (nowMainMenuIndex < menuOffset)
-            {
-                lastMenuOffset = menuOffset;
-                menuOffset--;
-            }
-        }
-        else if (nowMenuLevel == SECOND_MENU)
-        {
-            nowSubMenuIndex--;
-            if (nowSubMenuIndex < 0)
-                nowSubMenuIndex = 0;
-
-            // 自动滚动屏幕
-            if (nowSubMenuIndex < menuOffset)
-            {
-                lastMenuOffset = menuOffset;
-                menuOffset--;
-            }
-        }
-    }
 
     // 在Draw_Menu();之前添加动画触发判断
     if (menuOffset != oldOffset)
@@ -323,18 +350,10 @@ void Menu_Key_Handle(void)
 void Menu_Return()
 {
     nowMenuLevel = MAIN_MENU;
+    nowSubMenuIndex = 0;
     menuOffset = 0;
 }
 
-int tarMenuItemPOS_x = 10;                        // 目标位置（当前高亮项的 x 坐标）
-float nowMenuItemPOS_x = 0;                       // 当前实际绘制的位置（由 PID 控制）
-float SelectBoxPID_posX_PID[] = {0.2, 0.05, 0.1}; // PID 参数（想弹起来，调调i和d）
-pid_type_def SelectBoxPID_posX = {0};             // PID 结构体
-
-int tarMenuItemPOS_y = 10;
-float nowMenuItemPOS_y = 0;                         // 当前实际绘制的位置（由 PID 控制）
-float SelectBoxPID_posY_PID[] = {0.2, 0.026, 0.22}; // PID 参数（想弹起来，调调i和d）
-pid_type_def SelectBoxPID_posY = {0};               // PID 结构体
 enum BOX_CLASS
 {
     None = 0,      // 无效果
@@ -377,8 +396,8 @@ void DrawMainMenuBOX()
         PID_calc(&SelectBoxPID_posY, nowMenuItemPOS_y, tarMenuItemPOS_y);
         nowMenuItemPOS_y += SelectBoxPID_posY.out; // 使用 PID 的输出来更新实际位置
         // 判断位置是否稳定(没写)
-        bf.drawRect(10 - 3, nowMenuItemPOS_y - 3, RectWidth + 5, 22, CURSOR_COLOR);
-        bf.drawRect(10 - 2, nowMenuItemPOS_y - 2, RectWidth + 3, 20, CURSOR_COLOR);
+        bf.drawRect(10 - 3, nowMenuItemPOS_y - 3, RectWidth + 5, 21, CURSOR_COLOR);
+        bf.drawRect(10 - 2, nowMenuItemPOS_y - 2, RectWidth + 3, 19, CURSOR_COLOR);
         break;
     }
     }

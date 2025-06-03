@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BackendCodeEditorMiscSettings">
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="b148499e-6585-4aad-99ac-4266212292e4" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/MyController.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Key/key.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/Key/key.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/MyUI/menu.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/lib/MyUI/menu.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/MyUI/menu.h" beforeDir="false" afterPath="$PROJECT_DIR$/lib/MyUI/menu.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/MyUI/menutask.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/MyUI/menutask.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/MyUI/mypicture.h" beforeDir="false" afterPath="$PROJECT_DIR$/lib/MyUI/mypicture.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/TFT_eSPI/User_Setup.h" beforeDir="false" afterPath="$PROJECT_DIR$/lib/TFT_eSPI/User_Setup.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/platformio.ini" beforeDir="false" afterPath="$PROJECT_DIR$/platformio.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/模型文件/3D_PCB2_2025-05-11.SLDASM" beforeDir="false" afterPath="$PROJECT_DIR$/模型文件/3D_PCB2_2025-05-11.SLDASM" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/模型文件/零件39.SLDPRT" beforeDir="false" afterPath="$PROJECT_DIR$/模型文件/零件39.SLDPRT" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 6
+}]]></component>
+  <component name="ProjectId" id="2x8HmRBkUyEVtGwyqiTgsMnJQ6S" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.cidr.embedded.config",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="b148499e-6585-4aad-99ac-4266212292e4" name="更改" comment="" />
+      <created>1747312939484</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1747312939484</updated>
+      <workItem from="1747312941103" duration="117000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

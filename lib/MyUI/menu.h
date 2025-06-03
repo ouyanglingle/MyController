@@ -3,9 +3,8 @@
 #define MENU_H
 
 #include <TFT_eSPI.h>
-#include <key.h>
+#include <input.h>
 #include "pid.h"
-#include <menutask.h>
 #include <esp_heap_caps.h>
 
 #define BF_BG_COLOR TFT_BLACK        // 主菜单背景颜色
