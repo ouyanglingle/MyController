@@ -5,8 +5,9 @@
 一个基于 ESP32-S3 的嵌入式菜单系统，支持水平滚动主菜单与竖直子菜单，使用 **TFT_eSPI** 显示驱动和 **PID 控制器** 实现复选框弹性动画效果，适用于触摸或物理按键交互的嵌入式设备界面开发。
 
 ---
-## Visitors (since 2024/11/30)
-![visitors](https://visitor-badge.glitch.me/badge?page_id=ouyanglingle&left_color=green&right_color=red)
+
+## Visitors
+![counter](https://count.getloli.com/@ouyanglingle?name=ouyanglingle&theme=booru-lewd&padding=7&offset=0&align=top&scale=1&pixelated=1&darkmode=auto)
 
 
 ## Star History
