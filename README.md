@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/github/license/ouyanglingle/MyController)](https://github.com/ouyanglingle/MyController/main/LICENSE)
 
-一个基于 ESP32-S3 的嵌入式菜单系统，支持水平滚动主菜单与竖直子菜单，使用 **TFT_eSPI** 显示驱动和 **PID 控制器** 实现复选框弹性动画效果，适用于触摸或物理按键交互的嵌入式设备界面开发。
+一个基于 ESP32-S3 的简单嵌入式菜单系统，支持水平滚动主菜单与竖直子菜单，使用 **TFT_eSPI** 显示驱动和 **PID 控制器** 实现复选框弹性动画效果，适用于物理按键交互的嵌入式设备界面开发。
 
 ---
 
@@ -107,6 +107,7 @@ pio lib install "Bodmer/TFT_eSPI"
 #include <menu.h>
 
 void setup() {
+    Key_Init();
     Menu_Init(); // 初始化显示与菜单
 }
 
@@ -119,7 +120,7 @@ void loop() {
 
 ## ⚙️ 配置选项
 
-你可以在 `menu.h` 中自定义以下参数：
+你可以在 `menu.h` 中自定义以下参数（展示一部分）：
 
 ```c
 #define BF_BG_COLOR TFT_BLACK     // 主菜单背景色
@@ -151,7 +152,7 @@ float SelectBoxPID_posX_PID[] = {0.2, 0.05, 0.3}; // X轴弹性动画参数
 
 ## 📝 License
 
-MIT License，详见 LICENSE 文件
+AGPL-3.0 License，详见 LICENSE 文件
 
 ---
 
